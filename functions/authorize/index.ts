@@ -1,6 +1,6 @@
 import { Params } from '@based/server'
 
-const unrestrictedFunctions = ['login', 'registerUser']
+const unrestrictedFunctions = ['login', 'registerUser', 'confirmUser']
 
 export default async ({ callStack, based, user, name }: Params) => {
   console.log({ name, callStack })

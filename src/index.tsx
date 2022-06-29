@@ -88,35 +88,24 @@ const App = () => {
           Logout
         </Button>
       ) : (
-        <div style={{ width: 500, margin: 'auto' }}>
+        <div style={{ width: 300, margin: 'auto' }}>
           <Login
             onLogin={({ token, refreshToken }) => {
               setToken(token)
               setRefreshToken(refreshToken)
             }}
+            width={300}
             onRegister={async (data) => {
               const { email, password, name } = data
               const result = await client.call('registerUser', {
                 email,
                 password,
                 name,
-                actionUrl: 'http://based.io',
+                redirectUrl: window.location.href,
               })
               console.log('yes register', result)
             }}
           />
-          {/*<Register
-            onRegister={async (data) => {
-              const { email, password, name } = data
-              const result = await client.call('registerUser', {
-                email,
-                password,
-                name,
-                actionUrl: 'http://based.io',
-              })
-              console.log('yes register', result)
-            }}
-          />*/}
         </div>
       )}
     </div>
