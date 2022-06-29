@@ -4,6 +4,15 @@ import based from '@based/client'
 import useLocalStorage from '@based/use-local-storage'
 // @ts-ignore
 import basedConfig from '../based.json'
+import {
+  Provider,
+  Text,
+  Login,
+  RegisterButton,
+  Button,
+  DialogProvider,
+  Register,
+} from '@based/ui'
 
 const client = based(basedConfig)
 
@@ -16,9 +25,6 @@ if (!rootEl) {
 }
 
 const App = () => {
-  const [email, setEmail] = useState<string>()
-  const [password, setPassword] = useState<string>()
-
   // Stores the token and refreshToken in local storage
   const [token, setToken] = useLocalStorage('token')
   const [refreshToken, setRefreshToken] = useLocalStorage('refreshToken')
@@ -60,26 +66,19 @@ const App = () => {
   return (
     <div
       style={{
-        width: 300,
-        textAlign: 'left',
-        margin: 'auto',
-        paddingTop: 40,
-        fontFamily: 'sans-serif',
         display: 'flex',
+        height: '100vh',
+        width: '100vw',
         flexDirection: 'column',
       }}
     >
+      <Text>Auth Demo</Text>
       <p style={{ marginBottom: 16 }}>
         <strong>Data: </strong>
         {data}
       </p>
       {token ? (
-        <button
-          style={{
-            backgroundColor: 'lightgray',
-            padding: 8,
-            cursor: 'pointer',
-          }}
+        <Button
           onClick={async () => {
             await client.logout()
             setToken(null)
@@ -87,47 +86,46 @@ const App = () => {
           }}
         >
           Logout
-        </button>
+        </Button>
       ) : (
-        <>
-          <input
-            style={{ border: '1px solid black', marginBottom: 16 }}
-            placeholder="email"
-            name="email"
-            onChange={(e) => {
-              setEmail(e.target.value)
-            }}
-          />
-          <input
-            style={{ border: '1px solid black', marginBottom: 16 }}
-            placeholder="password"
-            type="password"
-            name="password"
-            onChange={(e) => {
-              setPassword(e.target.value)
-            }}
-          />
-          <button
-            style={{
-              backgroundColor: 'lightgray',
-              padding: 8,
-              cursor: 'pointer',
-            }}
-            onClick={async () => {
-              const { token, refreshToken } = await client.login({
-                email,
-                password,
-              })
+        <div style={{ width: 500, margin: 'auto' }}>
+          <Login
+            onLogin={({ token, refreshToken }) => {
               setToken(token)
               setRefreshToken(refreshToken)
             }}
-          >
-            Login
-          </button>
-        </>
+            onRegister={async (data) => {
+              const { email, password, name } = data
+              const result = await client.call('registerUser', {
+                email,
+                password,
+                name,
+                actionUrl: 'http://based.io',
+              })
+              console.log('yes register', result)
+            }}
+          />
+          {/*<Register
+            onRegister={async (data) => {
+              const { email, password, name } = data
+              const result = await client.call('registerUser', {
+                email,
+                password,
+                name,
+                actionUrl: 'http://based.io',
+              })
+              console.log('yes register', result)
+            }}
+          />*/}
+        </div>
       )}
     </div>
   )
 }
 
-render(<App />, rootEl)
+render(
+  <Provider client={client}>
+    <App />
+  </Provider>,
+  rootEl
+)

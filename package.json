@@ -11,16 +11,18 @@
     "postbuild": "cd ./dist && npm install --production"
   },
   "dependencies": {
-    "@based/client": "^2.7.5",
+    "@based/client": "^2.8.0",
     "@based/use-local-storage": "^0.4.0",
     "@types/react": "^18.0.5",
     "@types/react-dom": "^18.0.0",
     "react": "^17.0.2",
-    "react-dom": "^17.0.2"
+    "react-dom": "^17.0.2",
+    "@based/ui": "3.0.0-alpha"
   },
   "devDependencies": {
     "@saulx/aristotle": "^4.0.14",
     "@based/cli": "^2.9.0",
-    "@based/server": "^2.8.10"
+    "@based/server": "^2.8.10",
+    "postmark": "3.0.12"
   }
 }

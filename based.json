@@ -1,5 +1,6 @@
 {
-  "env": "<your dev>",
-  "project": "<your project>",
-  "org": "<your org>"
+  "env": "production",
+  "project": "hello",
+  "org": "saulx",
+  "cluster": "http://localhost:7022"
 }
