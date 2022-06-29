@@ -3,8 +3,6 @@ import { Params } from '@based/server'
 import { ServerClient } from 'postmark'
 import { buildHtmlEmail } from './email'
 
-const postmarkClient = new ServerClient('ee5acc67-86e6-4d87-b6bb-1f6e1ec2aced')
-
 const generateConfirmToken = (): Promise<string> =>
   new Promise((resolve) =>
     crypto.randomBytes(48, (_, buffer) =>
@@ -14,6 +12,9 @@ const generateConfirmToken = (): Promise<string> =>
 
 export default async ({ based, payload }: Params) => {
   const { name, email, password, redirectUrl, actionUrl } = payload
+
+  const postmarkApiKey = await based.secret('hello-postmark-apikey')
+  const postmarkClient = new ServerClient(postmarkApiKey)
 
   if (!email || !password) {
     throw new Error('email and password required')
