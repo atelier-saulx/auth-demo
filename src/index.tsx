@@ -4,15 +4,7 @@ import based from '@based/client'
 import useLocalStorage from '@based/use-local-storage'
 // @ts-ignore
 import basedConfig from '../based.json'
-import {
-  Provider,
-  Text,
-  Login,
-  RegisterButton,
-  Button,
-  DialogProvider,
-  Register,
-} from '@based/ui'
+import { Provider, Text, Login, Button } from '@based/ui'
 
 const client = based(basedConfig)
 
@@ -95,14 +87,7 @@ const App = () => {
               setRefreshToken(refreshToken)
             }}
             width={300}
-            onRegister={async (data) => {
-              const { email, password, name } = data
-              const result = await client.call('registerUser', {
-                email,
-                password,
-                name,
-                redirectUrl: window.location.href,
-              })
+            onRegister={async (result) => {
               console.log('yes register', result)
             }}
           />
