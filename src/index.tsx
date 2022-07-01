@@ -4,7 +4,7 @@ import based from '@based/client'
 import useLocalStorage from '@based/use-local-storage'
 // @ts-ignore
 import basedConfig from '../based.json'
-import { Provider, Text, Login, Button } from '@based/ui'
+import { Provider, Text, Auth, Button } from '@based/ui'
 
 const client = based(basedConfig)
 
@@ -80,13 +80,13 @@ const App = () => {
           Logout
         </Button>
       ) : (
-        <div style={{ width: 300, margin: 'auto' }}>
-          <Login
+        <div style={{ margin: 'auto' }}>
+          <Auth
+            logo
             onLogin={({ token, refreshToken }) => {
               setToken(token)
               setRefreshToken(refreshToken)
             }}
-            width={300}
             onRegister={async (result) => {
               console.log('yes register', result)
             }}
