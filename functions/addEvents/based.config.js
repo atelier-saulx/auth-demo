@@ -1,4 +1,4 @@
 module.exports = {
   observable: false,
-  name: "registerUser",
+  name: "addEvents",
 };
