@@ -11,9 +11,10 @@
     "postbuild": "cd ./dist && npm install --production"
   },
   "dependencies": {
-    "@based/client": "^2.8.0",
-    "@based/ui": "^3.0.0-alpha.4",
+    "@based/client": "^3.2.1",
+    "@based/ui": "^4.0.0-alpha.12",
     "@based/use-local-storage": "^0.4.0",
+    "@based/react": "^4.0.0",
     "@types/react": "^18.0.5",
     "@types/react-dom": "^18.0.0",
     "react": "^17.0.2",

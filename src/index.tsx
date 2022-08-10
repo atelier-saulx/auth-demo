@@ -1,60 +1,49 @@
-import React, { useEffect, useState } from 'react'
+import React, { FC } from 'react'
 import { render } from 'react-dom'
+import { useAuth, useData } from '@based/react'
 import based from '@based/client'
-import useLocalStorage from '@based/use-local-storage'
 // @ts-ignore
 import basedConfig from '../based.json'
-import { Provider, Text, Auth, Button } from '@based/ui'
+import {
+  Provider,
+  Text,
+  Authorize,
+  Avatar,
+  UserProfile,
+  useContextMenu,
+} from '@based/ui'
 
 const client = based(basedConfig)
 
-let rootEl = document.getElementById('root')
-
-if (!rootEl) {
-  rootEl = document.createElement('div')
-  rootEl.id = 'root'
-  document.body.appendChild(rootEl)
+const LoggedinBody: FC = () => {
+  const user = useAuth()
+  const { data } = useData({
+    $id: user?.id || null,
+    id: true,
+    name: true,
+    email: true,
+  })
+  const onProfile = useContextMenu(
+    UserProfile,
+    { id: user && user.id },
+    { position: 'right', offset: { x: 0, y: 28 } }
+  )
+  return (
+    <div>
+      <Text>User is logged in</Text>
+      <pre>
+        id: {data.id}
+        <br />
+        name: {data.name}
+        <br />
+        email: {data.email}
+      </pre>
+      <Avatar onClick={onProfile} label={data.name} />
+    </div>
+  )
 }
 
-const App = () => {
-  // Stores the token and refreshToken in local storage
-  const [token, setToken] = useLocalStorage('token')
-  const [refreshToken, setRefreshToken] = useLocalStorage('refreshToken')
-
-  const [data, setData] = useState<string>()
-
-  const renewHandler = ({ token: newToken }: { token: string }) => {
-    setToken(newToken)
-  }
-
-  useEffect(() => {
-    client.on('renewToken', renewHandler)
-    return () => {
-      client.removeListener('renewToken', renewHandler)
-    }
-  }, [])
-
-  useEffect(() => {
-    ;(async () => {
-      if (token) {
-        // Authenticates the user with the stored token and supplies the refreshToken
-        await client.auth(token, { refreshToken })
-      } else {
-        return client.auth(false)
-      }
-    })()
-
-    // Calls a data function
-    client
-      .call('getSomeData')
-      .then((result) => {
-        setData(result)
-      })
-      .catch((_err) => {
-        setData('No access')
-      })
-  }, [token])
-
+const App: FC = () => {
   return (
     <div
       style={{
@@ -64,39 +53,24 @@ const App = () => {
         flexDirection: 'column',
       }}
     >
-      <Text>Auth Demo</Text>
-      <p style={{ marginBottom: 16 }}>
-        <strong>Data: </strong>
-        {data}
-      </p>
-      {token ? (
-        <Button
-          onClick={async () => {
-            await client.logout()
-            setToken(null)
-            setRefreshToken(null)
-          }}
-        >
-          Logout
-        </Button>
-      ) : (
-        <div style={{ margin: 'auto' }}>
-          <Auth
-            logo
-            onLogin={({ token, refreshToken }) => {
-              setToken(token)
-              setRefreshToken(refreshToken)
-            }}
-            onRegister={async (result) => {
-              console.log('yes register', result)
-            }}
-          />
-        </div>
-      )}
+      <div style={{ margin: 'auto' }}>
+        <Authorize
+          // googleClientId="<your_google_client_id>"
+          // microsoftClientId="<your_microsoft_client_id>"
+          // githubClientId="<your_github_client_id>"
+          app={LoggedinBody}
+        />
+      </div>
     </div>
   )
 }
 
+let rootEl = document.getElementById('root')
+if (!rootEl) {
+  rootEl = document.createElement('div')
+  rootEl.id = 'root'
+  document.body.appendChild(rootEl)
+}
 render(
   <Provider client={client}>
     <App />
