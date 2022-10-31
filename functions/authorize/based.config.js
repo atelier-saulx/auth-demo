@@ -1,4 +1,4 @@
 module.exports = {
+  name: 'authorize',
   observable: false,
-  name: "registerUser",
-};
+}

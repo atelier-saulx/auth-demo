@@ -17,7 +17,7 @@
     "@based/ui": "^4.0.0-alpha.6"
   },
   "devDependencies": {
-    "@based/cli": "^2.9.0",
+    "@based/cli": "2.17.2-alpha.0",
     "@based/server": "^3.0.1",
     "@saulx/aristotle": "^4.3.1"
   }

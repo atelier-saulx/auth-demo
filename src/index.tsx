@@ -21,12 +21,9 @@ import {
 import based from "@based/client";
 import { useClient, useData } from "@based/react";
 import { prettyDate } from "@based/pretty-date";
+import basedConfig from "../based.json";
 
-export const client = based({
-  org: "saulx",
-  project: "demo",
-  env: "production",
-});
+export const client = based(basedConfig);
 
 const Todo = ({ id, name, description, createdAt, done }) => {
   const client = useClient();
@@ -142,7 +139,7 @@ const App = ({ user }: { user: { id: string; token: string } }) => {
                       parents: [user.id],
                     });
                   }}
-                  iconLeft={AddIcon}
+                  icon={AddIcon}
                   ghost
                 >
                   Add Todo
