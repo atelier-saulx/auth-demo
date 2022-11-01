@@ -1,33 +1,34 @@
-import { Params } from '@based/server'
+import { Params } from "@based/server";
 
 const unrestrictedFunctions = [
-  'login',
-  'registerUser',
-  'confirmUser',
-  'resetPassword',
-  'resetPasswordForm',
-  'resetPasswordRequest',
-  'authGoogle',
-  'authMicrosoft',
-  'authGithub',
-]
+  "login",
+  "confirmUser",
+  "registerUser",
+  "resetPassword",
+  "resetPasswordForm",
+  "resetPasswordRequest",
+  "authGoogle",
+  "authMicrosoft",
+  "authGithub",
+];
 
-export default async ({ based, user, callStack, name }: Params) => {
-  const { project, env } = based.opts
+export default async function ({ based, user, callStack, name }: Params) {
+  const { project, env } = based.opts;
   if (callStack && unrestrictedFunctions.includes(callStack[0])) {
-    return true
+    return true;
   }
-  if (unrestrictedFunctions.includes(name)) {
-    return true
+
+  if (unrestrictedFunctions.includes(String(name))) {
+    return true;
   }
 
   if (user && user._token) {
-    const token = await user.token(`users-public-key-${project}-${env}`)
+    const token = await user.token(`users-public-key-${project}-${env}`);
 
     if (token.id) {
-      return true
+      return true;
     }
   }
 
-  return false
+  return false;
 }

@@ -1,5 +1,5 @@
 import { render } from "react-dom";
-import React, { useState } from "react";
+import React from "react";
 import {
   Provider,
   Authorize,
@@ -46,7 +46,6 @@ const Todo = ({ id, name, description, createdAt, done }) => {
           }}
           type="text"
         />
-        {/* <Text weight={600}>{name}</Text> */}
         <Text color="text2">{description}</Text>
         <Text>{prettyDate(createdAt, "date-time")}</Text>
       </div>
@@ -54,7 +53,7 @@ const Todo = ({ id, name, description, createdAt, done }) => {
   );
 };
 
-const App = ({ user }: { user: { id: string; token: string } }) => {
+const Todos = ({ id = "root" }) => {
   const client = useClient();
   const [value, open] = useSelect(["Todo", "All", "Completed"], "All");
 
@@ -74,85 +73,95 @@ const App = ({ user }: { user: { id: string; token: string } }) => {
     });
   }
 
-  const { data, loading } = useData({
-    $id: user.id,
-    todos: {
-      id: true,
-      done: true,
-      name: true,
-      createdAt: true,
-      description: true,
-      $list: {
-        $sort: {
-          $field: "createdAt",
-          $order: "desc",
-        },
-        $limit: 100,
-        $offset: 0,
-        $find: {
-          $traverse: "children",
-          $filter: filter,
-        },
-      },
-    },
+  const { data, loading } = useData("observeTodos", {
+    id,
+    filter,
   });
 
+  // const { data, loading } = useData({
+  //   $id: id,
+  //   todos: {
+  //     id: true,
+  //     done: true,
+  //     name: true,
+  //     createdAt: true,
+  //     description: true,
+  //     $list: {
+  //       $sort: {
+  //         $field: "createdAt",
+  //         $order: "asc",
+  //       },
+  //       $limit: 100,
+  //       $offset: 0,
+  //       $find: {
+  //         $traverse: "children",
+  //         $filter: filter,
+  //       },
+  //     },
+  //   },
+  // });
+
+  return (
+    <div
+      style={{
+        padding: "32px 48px",
+        height: "calc(100vh - 66px)",
+        width: "100%",
+        overflowY: "auto",
+        overflowX: "hidden",
+      }}
+    >
+      {loading ? (
+        <LoadingIcon />
+      ) : (
+        <StackedListItemsWrapper
+          topLeft={
+            <>
+              <Text color="text2">Todos</Text>
+              <Button ghost onClick={open}>
+                {value || "All"}
+              </Button>
+            </>
+          }
+          topRight={
+            <>
+              <Button
+                onClick={async () => {
+                  await client.set({
+                    type: "todo",
+                    done: false,
+                    name: "New todo",
+                    parents: [id],
+                  });
+                }}
+                icon={AddIcon}
+                ghost
+              >
+                Add Todo
+              </Button>
+            </>
+          }
+        >
+          {data.todos?.map((t) => {
+            return <Todo {...t} key={t.id} />;
+          })}
+        </StackedListItemsWrapper>
+      )}
+    </div>
+  );
+};
+
+const App = ({ user }: { user: { id: string; token: string } }) => {
   return (
     <>
       <Topbar
-        data={{ Projects: "/", Settings: "/settings" }}
         onProfile={useContextMenu(
           UserProfile,
           { id: user.id },
           { position: "right", offset: { x: 0, y: 28 } }
         )}
       />
-      <div
-        style={{
-          padding: "32px 48px",
-          height: "calc(100vh - 66px)",
-          width: "100%",
-          overflowY: "auto",
-          overflowX: "hidden",
-        }}
-      >
-        {loading ? (
-          <LoadingIcon />
-        ) : (
-          <StackedListItemsWrapper
-            topLeft={
-              <>
-                <Text color="text2">Todos</Text>
-                <Button ghost onClick={open}>
-                  {value || "All"}
-                </Button>
-              </>
-            }
-            topRight={
-              <>
-                <Button
-                  onClick={async () => {
-                    await client.set({
-                      type: "todo",
-                      done: false,
-                      name: "New todo",
-                      parents: [user.id],
-                    });
-                  }}
-                  icon={AddIcon}
-                  ghost
-                >
-                  Add Todo
-                </Button>
-              </>
-            }
-          >
-            {data.todos?.map((t) => {
-              return <Todo {...t} key={t.id} />;
-            })}
-          </StackedListItemsWrapper>
-        )}
-      </div>
+      <Todos id={user.id} />;
     </>
   );
 };
